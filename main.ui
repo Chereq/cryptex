@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>426</height>
+    <width>619</width>
+    <height>452</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QTextEdit" name="textEdit"/>
+       <widget class="QPlainTextEdit" name="text_field"/>
       </item>
       <item>
        <spacer name="verticalSpacer_2">
@@ -63,6 +63,12 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QGroupBox" name="groupBox">
+          <property name="minimumSize">
+           <size>
+            <width>120</width>
+            <height>180</height>
+           </size>
+          </property>
           <property name="title">
            <string>Select coding params</string>
           </property>
@@ -94,22 +100,25 @@
            <property name="text">
             <string>Decode</string>
            </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
           </widget>
-          <widget class="QComboBox" name="comboBox">
+          <widget class="QComboBox" name="coding_selector">
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>80</y>
+             <y>100</y>
              <width>101</width>
              <height>22</height>
             </rect>
            </property>
           </widget>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="coding_label">
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>60</y>
+             <y>80</y>
              <width>81</width>
              <height>16</height>
             </rect>
@@ -118,10 +127,46 @@
             <string>Coding method:</string>
            </property>
           </widget>
+          <widget class="QRadioButton" name="radio_hash">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>60</y>
+             <width>82</width>
+             <height>17</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Hash</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="key_field">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>150</y>
+             <width>101</width>
+             <height>20</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLabel" name="key_label">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>130</y>
+             <width>47</width>
+             <height>13</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Key:</string>
+           </property>
+          </widget>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="convert_button">
           <property name="text">
            <string>Convert</string>
           </property>
@@ -152,7 +197,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>677</width>
+     <width>619</width>
      <height>21</height>
     </rect>
    </property>
