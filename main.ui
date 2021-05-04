@@ -6,23 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>695</width>
-    <height>551</height>
+    <width>1009</width>
+    <height>716</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>CryptEX</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>cryptex.ico</normaloff>cryptex.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <spacer name="horizontalSpacer">
+     <spacer name="verticalSpacer">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>40</width>
+        <width>20</width>
         <height>10</height>
        </size>
       </property>
@@ -31,14 +38,17 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <spacer name="verticalSpacer">
+       <spacer name="horizontalSpacer_2">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>13</width>
-          <height>40</height>
+          <width>10</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
@@ -47,14 +57,17 @@
        <widget class="QPlainTextEdit" name="text_field"/>
       </item>
       <item>
-       <spacer name="verticalSpacer_2">
+       <spacer name="horizontalSpacer_3">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>13</width>
-          <height>40</height>
+          <width>5</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
@@ -113,6 +126,9 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QComboBox" name="coding_selector"/>
+           </item>
            <item row="5" column="0">
             <widget class="QLabel" name="key_label">
              <property name="text">
@@ -120,13 +136,62 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QComboBox" name="coding_selector"/>
-           </item>
-           <item row="6" column="0" colspan="2">
+           <item row="7" column="0" colspan="2">
             <widget class="QLineEdit" name="key_field"/>
            </item>
+           <item row="6" column="0" colspan="2">
+            <widget class="QSpinBox" name="key_spin">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="maximum">
+              <number>32</number>
+             </property>
+             <property name="value">
+              <number>13</number>
+             </property>
+            </widget>
+           </item>
           </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="error_label">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Some error text here!</string>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Some error message here!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -139,14 +204,17 @@
        </layout>
       </item>
       <item>
-       <spacer name="verticalSpacer_3">
+       <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>13</width>
-          <height>40</height>
+          <width>10</width>
+          <height>20</height>
          </size>
         </property>
        </spacer>
@@ -161,8 +229,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>695</width>
-     <height>25</height>
+     <width>1009</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
