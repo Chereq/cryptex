@@ -31,6 +31,8 @@ def encode(text, method, key=None):
             text = urllib.parse.quote(text)
         elif method == 'ROT13':
             text = rot13(text, int(key))
+        elif method == 'Vigenere':
+            text = vigenere_encode(text, key)
     except Exception as ex:
         error = {'title': ex.__class__.__name__ , 'text': str(ex)}
     return error, text
@@ -45,9 +47,12 @@ def decode(text, method, key=None):
             text = urllib.parse.unquote(text)
         elif method == 'ROT13':
             text = rot13(text, int(key) * -1)
+        elif method == 'Vigenere':
+            text = vigenere_decode(text, key)
     except Exception as ex:
         error = {'title': ex.__class__.__name__ , 'text': str(ex)}
     return error, text
+
 
 def rot13(text, shift=13):
     new_text = ''
@@ -64,3 +69,11 @@ def rot13(text, shift=13):
         else:
             new_text += char
     return new_text
+
+
+def vigenere_encode(text, key):
+    return text
+
+
+def vigenere_decode(text, key):
+    return text
