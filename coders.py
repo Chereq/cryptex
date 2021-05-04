@@ -3,6 +3,7 @@
 
 import base64 as b64
 import urllib.parse
+from itertools import cycle
 
 
 CODERS = ('ROT13', 'Vigenere', 'A1Z26', 'Base64', 'URL')
@@ -28,6 +29,8 @@ def encode(text, method, key=None):
             text = b64.b64encode(text.encode('utf-8')).decode('utf-8')
         elif method == 'URL':
             text = urllib.parse.quote(text)
+        elif method == 'ROT13':
+            text = rot13(text, int(key))
     except Exception as ex:
         error = {'title': ex.__class__.__name__ , 'text': str(ex)}
     return error, text
@@ -40,6 +43,24 @@ def decode(text, method, key=None):
             text = b64.b64decode(text.encode('utf-8')).decode('utf-8')
         elif method == 'URL':
             text = urllib.parse.unquote(text)
+        elif method == 'ROT13':
+            text = rot13(text, int(key) * -1)
     except Exception as ex:
         error = {'title': ex.__class__.__name__ , 'text': str(ex)}
     return error, text
+
+def rot13(text, shift=13):
+    new_text = ''
+    for char in text:
+        char_num = ord(char)
+        if 97 <= char_num <= 122:
+            new_text += chr(97 + (char_num - 97 + shift) % 26)
+        elif 65 <= char_num <= 90:
+            new_text += chr(65 + (char_num - 65 + shift) % 26)
+        elif 1040 <= char_num <= 1071:
+            new_text += chr(1040 + (char_num - 1040 + shift) % 32)
+        elif 1072 <= char_num <= 1103:
+            new_text += chr(1072 + (char_num - 1072 + shift) % 32)
+        else:
+            new_text += char
+    return new_text
