@@ -1,11 +1,18 @@
-# cryptex
+# Cryptex
 PyQT test app for encoding/decoding text strings.
 
-# requirements
+# Project requirements
 All requirements listed in requirements.txt.
+
 Just run in project directory:
 
-    $ pip3 install -r requirements.txt 
+```
+pip3 install -r requirements.txt 
+```
 
-# running
-Simply run python3 main.py
+# Running
+To run this application type this in command line and then press ```Enter``` .
+
+```
+python3 main.py
+```
