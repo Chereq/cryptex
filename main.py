@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import hashlib
 from inspect import signature
 import json
@@ -40,6 +41,7 @@ class MainWindow(QMainWindow):
 
         self.about_dialog = AboutWindow()
         self.menu_about.triggered.connect(self.about_dialog.show)
+
         self.help_dialog = HelpWindow()
         self.menu_help.setShortcuts(QKeySequence('Ctrl+H'))
         self.menu_help.triggered.connect(self.help_dialog.show)
@@ -66,9 +68,12 @@ class MainWindow(QMainWindow):
         self.hide_error()
         self.load_params()
 
-        # some Шindows black magic here
-        myappid = 'mycompany.myproduct.subproduct.version'
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+        if os.name == 'nt':
+            # some Шindows black magic here
+            # setting taskbar icon
+            myappid = 'mycompany.myproduct.subproduct.version'
+            ctypes.windll.shell32\
+                .SetCurrentProcessExplicitAppUserModelID(myappid)
 
         if 'last_mode' not in self.params or \
            self.params['last_mode'] == 'encode':
@@ -79,14 +84,42 @@ class MainWindow(QMainWindow):
             self.radio_hash.setChecked(True)
 
     def open_file(self):
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', '/home')[0]
-        print('Opening...', file_name)
+        dir_path = os.path.abspath(os.getcwd())
+        if 'save_dir' in self.params:
+            dir_path = self.params['save_dir']
+        file_name = QFileDialog.getOpenFileName(self,
+                                                'Open file',
+                                                dir_path)[0]
+        if file_name:
+            self.save_filename = file_name
+            self.params['save_dir'] = os.path.dirname(
+                os.path.abspath(self.save_filename))
+            try:
+                text = open(self.save_filename, 'r').read()
+                self.text_field.setPlainText(text)
+            except Exception as ex:
+                self.show_error(ex.__class__.__name__, str(ex))
 
     def save_file(self, newfile=False):
+        file_name = ''
+        dir_path = os.path.abspath(os.getcwd())
+        if 'save_dir' in self.params:
+            dir_path = self.params['save_dir']
         if not self.save_filename or newfile:
-            file_name = QFileDialog.getSaveFileName(self, 'Save file', '/home')[0]
+            file_name = QFileDialog.getSaveFileName(self,
+                                                    'Save file',
+                                                    dir_path)[0]
+        if file_name:
             self.save_filename = file_name
-        print('saving...', self.save_filename)
+        if newfile and not file_name:
+            return
+        self.params['save_dir'] = os.path.dirname(
+            os.path.abspath(self.save_filename))
+        text = self.text_field.toPlainText()
+        try:
+            open(self.save_filename, 'w').write(text)
+        except Exception as ex:
+            self.show_error(ex.__class__.__name__, str(ex))
 
     def closeEvent(self, event):
         """close child forms and save self form dimensions and some params"""
@@ -273,9 +306,11 @@ class AboutWindow(QDialog):
         super().__init__(parent=parent)
         uic.loadUi('about.ui', self)
         self.setFixedSize(self.size())
-        self.setWindowFlags(self.windowFlags() &
-                            ~Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.close_button.clicked.connect(self.close)
+        self.about_field.setText('Yet another PyQT5 demo application '
+                                 'made on Earth\nby humans?')
         self.author_label.setText('89dd33736a5f5ff75891479a4e633897')
 
 
@@ -284,12 +319,18 @@ class HelpWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         uic.loadUi('help.ui', self)
-        self.setWindowFlags(self.windowFlags() &
-                            ~Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.close_button.clicked.connect(self.close)
 
         readme = open('README.md', 'r').read()
-        self.help_field.setMarkdown(readme)
+        # self.help_field.setMarkdown(readme)
+        self.help_field.setText('I need somebody!\n'
+                                '\tHelp!\n'
+                                'Not just anybody\n'
+                                '\tHelp!\n'
+                                'You know I need someone\n'
+                                '\tHeeelp~\n\n' + readme)
 
 
 if __name__ == '__main__':
