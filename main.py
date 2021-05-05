@@ -54,7 +54,10 @@ class MainWidget(QMainWindow):
         self.save_params()
 
     def save_params(self):
-        self.params['geometry'] = self.geometry().getRect()
+        self.params['maximazed'] = self.isMaximized()
+        if not self.params['maximazed']:
+            self.params['geometry'] = self.geometry().getRect()
+
         with open(CONFIG_FILE, 'w') as fp:
             json.dump(self.params, fp, sort_keys=True, indent=4)
 
@@ -64,8 +67,11 @@ class MainWidget(QMainWindow):
                 self.params = json.load(fp)
         except FileNotFoundError:
             self.params = dict()
+
         if 'geometry' in self.params:
             self.setGeometry(*self.params['geometry'])
+        if 'maximazed' in self.params and self.params['maximazed']:
+            self.showMaximized()
 
     def switch_mode_callback(self, event):
         if self.radio_encode.isChecked():
