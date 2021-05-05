@@ -5,9 +5,11 @@ import sys
 import hashlib
 from inspect import signature
 import json
+import ctypes
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 
 import coders
@@ -16,8 +18,10 @@ import coders
 CONFIG_FILE = 'config.json'
 
 
-class MainWidget(QMainWindow):
+class MainWindow(QMainWindow):
+    """main window defines here"""
     def __init__(self):
+        """init ui and connect some callbacks"""
         super().__init__()
         uic.loadUi('main.ui', self)
         self.convert_button.clicked.connect(self.convert)
@@ -32,8 +36,39 @@ class MainWidget(QMainWindow):
         hash_algs = hashlib.algorithms_available
         self.hashes_list = [str(hs) for hs in sorted(hash_algs)]
 
+        self.save_filename = ''
+
+        self.about_dialog = AboutWindow()
+        self.menu_about.triggered.connect(self.about_dialog.show)
+        self.help_dialog = HelpWindow()
+        self.menu_help.setShortcuts(QKeySequence('Ctrl+H'))
+        self.menu_help.triggered.connect(self.help_dialog.show)
+
+        self.actionOpen.setShortcuts(QKeySequence('Ctrl+O'))
+        self.actionOpen.triggered.connect(self.open_file)
+        self.actionSave.setShortcuts(QKeySequence('Ctrl+S'))
+        self.actionSave.triggered.connect(self.save_file)
+        self.actionSave_As.setShortcuts(QKeySequence('Ctrl+Shift+S'))
+        self.actionSave_As.triggered.connect(lambda e: self.save_file(True))
+        self.actionExit.setShortcuts((QKeySequence('Ctrl+Q'),
+                                      QKeySequence('Escape')))
+        self.actionExit.triggered.connect(self.close)
+
+        self.actionCut.setShortcuts(QKeySequence('Ctrl+X'))
+        self.actionCut.triggered.connect(self.text_field.cut)
+        self.actionCopy.setShortcuts(QKeySequence('Ctrl+C'))
+        self.actionCopy.triggered.connect(self.text_field.copy)
+        self.actionPaste.setShortcuts(QKeySequence('Ctrl+V'))
+        self.actionPaste.triggered.connect(self.text_field.paste)
+        self.actionClear.setShortcuts(QKeySequence('Ctrl+Backspace'))
+        self.actionClear.triggered.connect(self.text_field.clear)
+
         self.hide_error()
         self.load_params()
+
+        # some Шindows black magic here
+        myappid = 'mycompany.myproduct.subproduct.version'
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
         if 'last_mode' not in self.params or \
            self.params['last_mode'] == 'encode':
@@ -43,17 +78,24 @@ class MainWidget(QMainWindow):
         else:
             self.radio_hash.setChecked(True)
 
-    def keyPressEvent(self, event):
-        if event.modifiers() == Qt.ControlModifier and \
-           event.key() == Qt.Key_Q:
-            sys.exit()
-        if event.key() == Qt.Key_Escape:
-            sys.exit()
+    def open_file(self):
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', '/home')[0]
+        print('Opening...', file_name)
+
+    def save_file(self, newfile=False):
+        if not self.save_filename or newfile:
+            file_name = QFileDialog.getSaveFileName(self, 'Save file', '/home')[0]
+            self.save_filename = file_name
+        print('saving...', self.save_filename)
 
     def closeEvent(self, event):
+        """close child forms and save self form dimensions and some params"""
+        self.about_dialog.close()
+        self.help_dialog.close()
         self.save_params()
 
     def save_params(self):
+        """serialize params dict and write to pretty .json file"""
         self.params['maximazed'] = self.isMaximized()
         if not self.params['maximazed']:
             self.params['geometry'] = self.geometry().getRect()
@@ -62,6 +104,8 @@ class MainWidget(QMainWindow):
             json.dump(self.params, fp, sort_keys=True, indent=4)
 
     def load_params(self):
+        """trying to read params from .json file and
+        set main window params if available"""
         try:
             with open(CONFIG_FILE, 'r') as fp:
                 self.params = json.load(fp)
@@ -74,6 +118,7 @@ class MainWidget(QMainWindow):
             self.showMaximized()
 
     def switch_mode_callback(self, event):
+        """process clicks on radiobuttons"""
         if self.radio_encode.isChecked():
             self.set_drop_down_coders()
             self.params['last_mode'] = 'encode'
@@ -85,6 +130,7 @@ class MainWidget(QMainWindow):
             self.params['last_mode'] = 'hash'
 
     def switch_algorithm_callback(self, event):
+        """process drop-down menu select"""
         self.hile_key_spin()
         self.hile_key_field()
 
@@ -106,6 +152,7 @@ class MainWidget(QMainWindow):
             self.params['last_hash'] = event
 
     def get_md(self, string, algorithm):
+        """calc digest and show to user"""
         hash_obj = hashlib.new(algorithm, string.encode('utf-8'))
         try:
             sig = signature(hash_obj.hexdigest).parameters
@@ -117,18 +164,21 @@ class MainWidget(QMainWindow):
             return hash_obj.hexdigest(1024)
 
     def encode(self, string, algorithm, key=None):
+        """process text encoding"""
         error, text = coders.encode(string, algorithm, key)
         if error:
             self.show_error(error['title'], error['text'])
         return text
 
     def decode(self, string, algorithm, key=None):
+        """process text decoding"""
         error, text = coders.decode(string, algorithm, key)
         if error:
             self.show_error(error['title'], error['text'])
         return text
 
     def convert(self):
+        """convert button callback, select method and process text"""
         self.hide_error()
         key_type = coders.is_key(self.coding_selector.currentText())
         key = None
@@ -157,24 +207,29 @@ class MainWidget(QMainWindow):
         self.text_field.setPlainText(text)
 
     def show_key_spin(self):
+        """show numeric key field"""
         self.hile_key_field()
         self.key_label.show()
         self.key_spin.show()
 
     def hile_key_spin(self):
+        """hide numeric key field"""
         self.key_label.hide()
         self.key_spin.hide()
 
     def show_key_field(self):
+        """show text key field"""
         self.hile_key_spin()
         self.key_label.show()
         self.key_field.show()
 
     def hile_key_field(self):
+        """hide text key field"""
         self.key_label.hide()
         self.key_field.hide()
 
     def set_drop_down_coders(self):
+        """fill drop-down menu with coders methods"""
         index = 0
         if 'last_coder' in self.params:
             index = self.coders_list.index(self.params['last_coder'])
@@ -183,6 +238,7 @@ class MainWidget(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def set_drop_down_decoders(self):
+        """fill drop-down menu with decoders methods"""
         index = 0
         if 'last_decoder' in self.params:
             index = self.decoders_list.index(self.params['last_decoder'])
@@ -191,6 +247,7 @@ class MainWidget(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def set_drop_down_hashes(self):
+        """fill drop-down menu with hash algorithms"""
         index = 0
         if 'last_hash' in self.params:
             index = self.hashes_list.index(self.params['last_hash'])
@@ -199,17 +256,44 @@ class MainWidget(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def hide_error(self):
+        """hide error field"""
         self.error_label.hide()
 
     def show_error(self, error_title, error_text):
+        """show error field with some data about error"""
         self.error_label.setText(error_title)
         self.error_label.setToolTip(error_text)
         self.error_label.setStyleSheet("color: red")
         self.error_label.show()
 
 
+class AboutWindow(QDialog):
+    """About dialog with some text, image and close button"""
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        uic.loadUi('about.ui', self)
+        self.setFixedSize(self.size())
+        self.setWindowFlags(self.windowFlags() &
+                            ~Qt.WindowContextHelpButtonHint)
+        self.close_button.clicked.connect(self.close)
+        self.author_label.setText('89dd33736a5f5ff75891479a4e633897')
+
+
+class HelpWindow(QDialog):
+    """Help dialog with rendered README.md on text-browser field"""
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        uic.loadUi('help.ui', self)
+        self.setWindowFlags(self.windowFlags() &
+                            ~Qt.WindowContextHelpButtonHint)
+        self.close_button.clicked.connect(self.close)
+
+        readme = open('README.md', 'r').read()
+        self.help_field.setMarkdown(readme)
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    main_window = MainWidget()
+    main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())

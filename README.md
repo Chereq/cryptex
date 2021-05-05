@@ -1,5 +1,5 @@
 # Cryptex
-PyQT test app for encoding/decoding text strings.
+Simple PyQT app for encoding/decoding text strings.
 
 # Project requirements
 All requirements listed in requirements.txt.
@@ -16,3 +16,6 @@ To run this application type this in command line and then press ```Enter``` .
 ```
 python3 main.py
 ```
+
+# Usage
+Type or paste some text in edit-area, select destruction method from right menu and press ```Convert``` button.
