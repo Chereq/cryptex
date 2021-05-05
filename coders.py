@@ -33,6 +33,8 @@ def encode(text, method, key=None):
             text = rot13(text, int(key))
         elif method == 'Vigenere':
             text = vigenere_encode(text, key)
+        elif method == 'A1Z26':
+            text = a1z26_encode(text)
     except Exception as ex:
         error = {'title': ex.__class__.__name__, 'text': str(ex)}
     return error, text
@@ -49,6 +51,8 @@ def decode(text, method, key=None):
             text = rot13(text, int(key) * -1)
         elif method == 'Vigenere':
             text = vigenere_decode(text, key)
+        elif method == 'A1Z26':
+            text = a1z26_decode(text)
     except Exception as ex:
         error = {'title': ex.__class__.__name__, 'text': str(ex)}
     return error, text
@@ -133,6 +137,16 @@ def vigenere_encode(text, key):
 def vigenere_decode(text, key):
     key = vigenere_make_key(key, rev=True)
     return vigenere_transform(text, key)
+
+
+def a1z26_encode(text):
+    text = '-'.join(map(str, map(ord, text)))
+    return text
+
+
+def a1z26_decode(text):
+    text = ''.join(map(chr, map(int, text.split('-'))))
+    return text
 
 
 def main():
