@@ -13,49 +13,87 @@ KEY_DECIMAL = 1
 KEY_TEXT = 2
 
 
-def is_key(method):
-    if method == 'ROT13':
+def is_key(algorithm):
+    """Key type function
+
+    Args:
+        algorithm: Text string defines algorithm.
+
+    Returns:
+        Constant - KEY_DECIMAL if algorithm required integer as key,
+                   KEY_TEXT if algorithm required string as key,
+                   KEY_NOKEY otherwise.
+
+    """
+    if algorithm == 'ROT13':
         return KEY_DECIMAL
-    elif method == 'Vigenere':
+    elif algorithm == 'Vigenere':
         return KEY_TEXT
     else:
         return KEY_NOKEY
 
 
-def encode(text, method, key=None):
+def encode(text, algorithm, key=None):
+    """Encode text function
+
+    Args:
+        text: Text string for encryption.
+        algorithm: Text string defines algorithm.
+        key: Text string or integer - encryption key.
+
+    Returns:
+        Error - None if encryption is ok,
+                else dictionary with error title and error text.
+        Text string - encrypted text.
+
+    """
     error = None
     try:
-        if method == 'Base64':
+        if algorithm == 'Base64':
             text = b64.b64encode(text.encode('utf-8')).decode('utf-8')
-        elif method == 'URL':
+        elif algorithm == 'URL':
             text = urllib.parse.quote(text)
-        elif method == 'ROT13':
+        elif algorithm == 'ROT13':
             text = rot13(text, int(key))
-        elif method == 'Vigenere':
+        elif algorithm == 'Vigenere':
             text = vigenere_encode(text, key)
-        elif method == 'A1Z26':
+        elif algorithm == 'A1Z26':
             text = a1z26_encode(text)
     except Exception as ex:
         error = {'title': ex.__class__.__name__, 'text': str(ex)}
     return error, text
 
 
-def decode(text, method, key=None):
+def decode(text, algorithm, key=None):
+    """Decode text function
+
+    Args:
+        text: Encrypted text string for decryption.
+        algorithm: Text string defines algorithm.
+        key: Text string or integer - decryption key.
+
+    Returns:
+        Error - None if decryption is ok,
+                else dictionary with error title and error text.
+        Text string - decrypted text.
+
+    """
     error = None
     try:
-        if method == 'Base64':
+        if algorithm == 'Base64':
             text = b64.b64decode(text.encode('utf-8')).decode('utf-8')
-        elif method == 'URL':
+        elif algorithm == 'URL':
             text = urllib.parse.unquote(text)
-        elif method == 'ROT13':
+        elif algorithm == 'ROT13':
             text = rot13(text, int(key) * -1)
-        elif method == 'Vigenere':
+        elif algorithm == 'Vigenere':
             text = vigenere_decode(text, key)
-        elif method == 'A1Z26':
+        elif algorithm == 'A1Z26':
             text = a1z26_decode(text)
     except Exception as ex:
         error = {'title': ex.__class__.__name__, 'text': str(ex)}
     return error, text
+
 
 lat_range_1 = 65, 91, 26
 lat_range_2 = 97, 123, 26
@@ -64,6 +102,17 @@ cyr_range_2 = 1072, 1104, 32
 
 
 def rot13(text, shift=13):
+    """Simple letter substitution cipher that replaces a letter
+    with the 13th letter after it in the alphabet or use selected shift.
+
+    Args:
+        text: Text string for conversion.
+        shift: Integer - custom alphabet shift.
+
+    Returns:
+        Text string - converted text.
+
+    """
     new_text = ''
     for char in text:
         char_num = ord(char)
@@ -84,6 +133,16 @@ def rot13(text, shift=13):
 
 
 def vigenere_make_key(key, rev=False):
+    """Generate key iterator for Vigenere algorithm.
+
+    Args:
+        key: Text string.
+        rev: Boolean - reverse shifts direction for decoding.
+
+    Returns:
+        cycle() iterator - shifts defined by key.
+
+    """
     key_ = []
     for char in key:
         char_num = ord(char)
@@ -108,6 +167,17 @@ def vigenere_make_key(key, rev=False):
 
 
 def vigenere_transform(text, key):
+    """Simple method of encrypting alphabetic text by using a series of
+    interwoven Caesar ciphers, based on the letters of a keyword
+
+    Args:
+        text: Text string for conversion.
+        key: cycle() iterator from vigenere_make_key() function.
+
+    Returns:
+        Text string - converted text.
+
+    """
     new_text = ''
     for char in text:
         char_num = ord(char)
@@ -130,21 +200,45 @@ def vigenere_transform(text, key):
 
 
 def vigenere_encode(text, key):
+    """Convert text by Vigenere algorithm with forward direction key
+
+    Args:
+        text: Text string for conversion.
+        key: Text string defines key.
+
+    Returns:
+        Text string - converted text.
+
+    """
     key = vigenere_make_key(key, rev=False)
     return vigenere_transform(text, key)
 
 
 def vigenere_decode(text, key):
+    """Convert text by Vigenere algorithm with backward direction key
+
+    Args:
+        text: Text string for conversion.
+        key: Text string defines key.
+
+    Returns:
+        Text string - converted text.
+
+    """
     key = vigenere_make_key(key, rev=True)
     return vigenere_transform(text, key)
 
 
 def a1z26_encode(text):
+    """Simple alphabetic text encoding by replacing
+    each char with char number"""
     text = '-'.join(map(str, map(ord, text)))
     return text
 
 
 def a1z26_decode(text):
+    """Simple alphabetic text decoding by replacing
+    each char number in source text by char itself"""
     text = ''.join(map(chr, map(int, text.split('-'))))
     return text
 

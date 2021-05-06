@@ -11,7 +11,7 @@ import ctypes
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QAction
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSignalMapper
 
 import coders
 
@@ -49,14 +49,15 @@ class MainWindow(QMainWindow):
         self.menu_help.setShortcuts(QKeySequence('Ctrl+H'))
         self.menu_help.triggered.connect(self.help_dialog.show)
 
+        self.actionNew.setShortcuts(QKeySequence('Ctrl+N'))
+        self.actionNew.triggered.connect(self.new_file)
         self.actionOpen.setShortcuts(QKeySequence('Ctrl+O'))
         self.actionOpen.triggered.connect(self.open_file)
         self.actionSave.setShortcuts(QKeySequence('Ctrl+S'))
         self.actionSave.triggered.connect(self.save_file)
         self.actionSave_As.setShortcuts(QKeySequence('Ctrl+Shift+S'))
         self.actionSave_As.triggered.connect(lambda e: self.save_file(True))
-        self.actionExit.setShortcuts((QKeySequence('Ctrl+Q'),
-                                      QKeySequence('Escape')))
+        self.actionExit.setShortcuts(QKeySequence('Ctrl+Q'))
         self.actionExit.triggered.connect(self.close)
 
         self.actionCut.setShortcuts(QKeySequence('Ctrl+X'))
@@ -68,12 +69,9 @@ class MainWindow(QMainWindow):
         self.actionClear.setShortcuts(QKeySequence('Ctrl+Backspace'))
         self.actionClear.triggered.connect(self.text_field.clear)
 
-        for file_name in self.params['recent_files']:
-            recentAction = QAction(file_name, self)
-            # recentAction.setShortcut("Ctrl+A")
-            # recentAction.setStatusTip('Leave The App')
-            recentAction.triggered.connect(self.close)
-            self.menuOpen_recent.insertAction(self.actionClear_items, recentAction)
+        self.window_title = self.windowTitle()
+
+        self.update_recent_menu()
 
         if os.name == 'nt':
             # some Шindows black magic here
@@ -90,24 +88,80 @@ class MainWindow(QMainWindow):
         else:
             self.radio_hash.setChecked(True)
 
-    def open_file(self):
+    def clear_recent(self, event):
+        """Reset recent files dictionary"""
+        self.params['recent_files'].clear()
+        self.update_recent_menu()
+
+    def open_recent(self, event):
+        """Open recent click callback"""
+        self.open_file(self.params['recent_files'][event])
+
+    def update_recent_menu(self):
+        """Update open recent menu with files list from params"""
+        self.menuOpen_recent.clear()
+        clear_recentAction = QAction("Clear items", self)
+        clear_recentAction.triggered.connect(self.clear_recent)
+        clear_recentAction.setEnabled(False)
+
+        self.recent_mapper = QSignalMapper(self)
+
+        for file_name in self.params['recent_files']:
+            recentAction = QAction(file_name, self)
+            self.menuOpen_recent.addAction(recentAction)
+            self.recent_mapper.setMapping(recentAction, file_name)
+            recentAction.triggered.connect(self.recent_mapper.map)
+            clear_recentAction.setEnabled(True)
+
+        self.recent_mapper.mapped['QString'].connect(self.open_recent)
+        self.menuOpen_recent.addSeparator()
+        self.menuOpen_recent.addAction(clear_recentAction)        
+
+    def new_file(self):
+        """Reset previously opened/saved filename and cleans text_field"""
+        self.save_filename = ''
+        self.text_field.clear()
+        self.setWindowTitle(self.window_title)
+
+    def open_file(self, file_name=None):
+        """Open file function.
+        Show file selection dialog if file_name not set,
+        reads file and place file content to text area
+
+        Args:
+            file_name: Text string defines filename to open.
+
+        """
         dir_path = os.path.abspath(os.getcwd())
         if 'save_dir' in self.params:
             dir_path = self.params['save_dir']
-        file_name = QFileDialog.getOpenFileName(self,
-                                                'Open file',
-                                                dir_path)[0]
+        if not file_name:
+            file_name = QFileDialog.getOpenFileName(self,
+                                                    'Open file',
+                                                    dir_path)[0]
         if file_name:
             self.save_filename = file_name
             self.params['save_dir'] = os.path.dirname(
                 os.path.abspath(self.save_filename))
             try:
+                self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
+                self.update_recent_menu()
                 text = open(self.save_filename, 'r').read()
                 self.text_field.setPlainText(text)
+                self.setWindowTitle(self.window_title + ': ' + self.save_filename)
             except Exception as ex:
                 self.show_error(ex.__class__.__name__, str(ex))
 
     def save_file(self, newfile=False):
+        """Save file function.
+        Calls by "file" menu or hotkeys
+        Save text from text area to previously selected file or
+        new file by file dialog
+
+        Args:
+            newfile: bool type argument forces showing file dialog.
+
+        """
         file_name = ''
         dir_path = os.path.abspath(os.getcwd())
         if 'save_dir' in self.params:
@@ -122,6 +176,8 @@ class MainWindow(QMainWindow):
             return
         self.params['save_dir'] = os.path.dirname(
             os.path.abspath(self.save_filename))
+        self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
+        self.update_recent_menu()
         text = self.text_field.toPlainText()
         try:
             open(self.save_filename, 'w').write(text)
@@ -129,7 +185,10 @@ class MainWindow(QMainWindow):
             self.show_error(ex.__class__.__name__, str(ex))
 
     def closeEvent(self, event):
-        """close child forms and save self form dimensions and some params"""
+        """close child forms and save self form dimensions
+        and some another params
+
+        """
         self.about_dialog.close()
         self.help_dialog.close()
         self.save_params()
@@ -145,7 +204,9 @@ class MainWindow(QMainWindow):
 
     def load_params(self):
         """trying to read params from .json file and
-        set main window params if available"""
+        set main window dimensions if available
+
+        """
         try:
             with open(CONFIG_FILE, 'r') as fp:
                 self.params = json.load(fp)
@@ -193,7 +254,18 @@ class MainWindow(QMainWindow):
             self.params['last_hash'] = event
 
     def get_md(self, string, algorithm):
-        """calc digest and show to user"""
+        """Process text string through selected
+        by drop-down menu hash-function
+        and return function return.
+
+        Args:
+            string: Text string for hashing.
+            algorithm: Text string defines hash-algorithm.
+
+        Returns:
+            Text string - hash-function hexdigest.
+
+        """
         hash_obj = hashlib.new(algorithm, string.encode('utf-8'))
         try:
             sig = signature(hash_obj.hexdigest).parameters
@@ -205,21 +277,48 @@ class MainWindow(QMainWindow):
             return hash_obj.hexdigest(1024)
 
     def encode(self, string, algorithm, key=None):
-        """process text encoding"""
+        """Process text through selected by drop-down menu encoding function
+
+        Args:
+            string: Text string for encryption.
+            algorithm: Text string defines encryption algorithm.
+            key: Text string or integer - key for text encryption.
+
+        Returns:
+            Text string - encryption result.
+
+        """
         error, text = coders.encode(string, algorithm, key)
         if error:
             self.show_error(error['title'], error['text'])
         return text
 
     def decode(self, string, algorithm, key=None):
-        """process text decoding"""
+        """Process encrypted text through selected
+        by drop-down menu decoding function
+
+        Args:
+            string: Encrypted text string for decryption.
+            algorithm: Text string defines encryption algorithm.
+            key: Text string or integer - key for text decryption.
+
+        Returns:
+            Text string - decryption result.
+
+        """
         error, text = coders.decode(string, algorithm, key)
         if error:
             self.show_error(error['title'], error['text'])
         return text
 
     def convert(self):
-        """convert button callback, select method and process text"""
+        """Convert button callback,
+        select method by checked radiobutton and drop-down menu
+        than process text through selected function.
+
+        Gets text string and place processed text from/to text_field
+
+        """
         self.hide_error()
         key_type = coders.is_key(self.coding_selector.currentText())
         key = None
@@ -248,29 +347,29 @@ class MainWindow(QMainWindow):
         self.text_field.setPlainText(text)
 
     def show_key_spin(self):
-        """show numeric key field"""
+        """Show numeric key field"""
         self.hile_key_field()
         self.key_label.show()
         self.key_spin.show()
 
     def hile_key_spin(self):
-        """hide numeric key field"""
+        """Hide numeric key field"""
         self.key_label.hide()
         self.key_spin.hide()
 
     def show_key_field(self):
-        """show text key field"""
+        """Show text key field"""
         self.hile_key_spin()
         self.key_label.show()
         self.key_field.show()
 
     def hile_key_field(self):
-        """hide text key field"""
+        """Hide text key field"""
         self.key_label.hide()
         self.key_field.hide()
 
     def set_drop_down_coders(self):
-        """fill drop-down menu with coders methods"""
+        """Fill drop-down menu with coders methods"""
         index = 0
         if 'last_coder' in self.params:
             index = self.coders_list.index(self.params['last_coder'])
@@ -279,7 +378,7 @@ class MainWindow(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def set_drop_down_decoders(self):
-        """fill drop-down menu with decoders methods"""
+        """Fill drop-down menu with decoders methods"""
         index = 0
         if 'last_decoder' in self.params:
             index = self.decoders_list.index(self.params['last_decoder'])
@@ -288,7 +387,7 @@ class MainWindow(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def set_drop_down_hashes(self):
-        """fill drop-down menu with hash algorithms"""
+        """Fill drop-down menu with hash algorithms"""
         index = 0
         if 'last_hash' in self.params:
             index = self.hashes_list.index(self.params['last_hash'])
@@ -297,11 +396,11 @@ class MainWindow(QMainWindow):
         self.coding_selector.setCurrentIndex(index)
 
     def hide_error(self):
-        """hide error field"""
+        """Hide error text label"""
         self.error_label.hide()
 
     def show_error(self, error_title, error_text):
-        """show error field with some data about error"""
+        """Show error text label with some data about error in tooltip"""
         self.error_label.setText(error_title)
         self.error_label.setToolTip(error_text)
         self.error_label.setStyleSheet("color: red")
@@ -331,18 +430,26 @@ class HelpWindow(QDialog):
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.close_button.clicked.connect(self.close)
 
-        readme = open('README.md', 'r').read()
-        # self.help_field.setMarkdown(readme)
-        self.help_field.setText('I need somebody!\n'
-                                '\tHelp!\n'
-                                'Not just anybody\n'
-                                '\tHelp!\n'
-                                'You know I need someone\n'
-                                '\tHeeelp~\n\n' + readme)
+        readme = '(Help!) I need somebody!  \n' \
+                 '(Help!) Not just anybody  \n' \
+                 '(Help!) You know I need someone  \n' \
+                 '\tHeelp~  \n\n'
+
+        readme += open('README.md', 'r').read()
+        self.help_field.setText(readme)
+        try:
+            self.help_field.setMarkdown(readme)
+        except:
+            pass
 
 
-if __name__ == '__main__':
+def main():
+    """Create and open main window"""
     app = QApplication(sys.argv)
     main_window = MainWindow()
     main_window.show()
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
