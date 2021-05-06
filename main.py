@@ -144,11 +144,12 @@ class MainWindow(QMainWindow):
             self.params['save_dir'] = os.path.dirname(
                 os.path.abspath(self.save_filename))
             try:
-                self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
-                self.update_recent_menu()
                 text = open(self.save_filename, 'r').read()
                 self.text_field.setPlainText(text)
                 self.setWindowTitle(self.window_title + ': ' + self.save_filename)
+
+                self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
+                self.update_recent_menu()
             except Exception as ex:
                 self.show_error(ex.__class__.__name__, str(ex))
 
