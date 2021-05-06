@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>passkey.png</normaloff>passkey.png</iconset>
+    <normaloff>images/passkey.png</normaloff>images/passkey.png</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -67,7 +67,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>cryptex.png</pixmap>
+      <pixmap>images/cryptex.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

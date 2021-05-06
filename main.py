@@ -17,14 +17,14 @@ import coders
 
 
 CONFIG_FILE = 'config.json'
-
+UI_DIR = 'ui'
 
 class MainWindow(QMainWindow):
     """main window defines here"""
     def __init__(self):
         """init ui and connect some callbacks"""
         super().__init__()
-        uic.loadUi('main.ui', self)
+        uic.loadUi(UI_DIR + '/main.ui', self)
         self.hide_error()
         self.load_params()
 
@@ -42,10 +42,10 @@ class MainWindow(QMainWindow):
 
         self.save_filename = ''
 
-        self.about_dialog = AboutWindow()
+        self.about_dialog = AboutWindow(parent=self)
         self.menu_about.triggered.connect(self.about_dialog.show)
 
-        self.help_dialog = HelpWindow()
+        self.help_dialog = HelpWindow(parent=self)
         self.menu_help.setShortcuts(QKeySequence('Ctrl+H'))
         self.menu_help.triggered.connect(self.help_dialog.show)
 
@@ -411,7 +411,7 @@ class AboutWindow(QDialog):
     """About dialog with some text, image and close button"""
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        uic.loadUi('about.ui', self)
+        uic.loadUi(UI_DIR + '/about.ui', self)
         self.setFixedSize(self.size())
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
@@ -425,7 +425,7 @@ class HelpWindow(QDialog):
     """Help dialog with rendered README.md on text-browser field"""
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        uic.loadUi('help.ui', self)
+        uic.loadUi(UI_DIR + '/help.ui', self)
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.close_button.clicked.connect(self.close)
