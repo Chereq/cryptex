@@ -11,7 +11,7 @@ pip3 install -r requirements.txt
 ```
 
 # Running
-To run this application type this in command line and then press ```Enter``` .
+To run this application type this in command line and then press ```Enter```.
 
 ```
 python3 main.py
