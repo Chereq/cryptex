@@ -9,7 +9,7 @@ import json
 import ctypes
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QAction
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt
 
@@ -25,6 +25,9 @@ class MainWindow(QMainWindow):
         """init ui and connect some callbacks"""
         super().__init__()
         uic.loadUi('main.ui', self)
+        self.hide_error()
+        self.load_params()
+
         self.convert_button.clicked.connect(self.convert)
         self.radio_encode.toggled.connect(self.switch_mode_callback)
         self.radio_decode.toggled.connect(self.switch_mode_callback)
@@ -65,8 +68,12 @@ class MainWindow(QMainWindow):
         self.actionClear.setShortcuts(QKeySequence('Ctrl+Backspace'))
         self.actionClear.triggered.connect(self.text_field.clear)
 
-        self.hide_error()
-        self.load_params()
+        for file_name in self.params['recent_files']:
+            recentAction = QAction(file_name, self)
+            # recentAction.setShortcut("Ctrl+A")
+            # recentAction.setStatusTip('Leave The App')
+            recentAction.triggered.connect(self.close)
+            self.menuOpen_recent.insertAction(self.actionClear_items, recentAction)
 
         if os.name == 'nt':
             # some Шindows black magic here
@@ -144,7 +151,8 @@ class MainWindow(QMainWindow):
                 self.params = json.load(fp)
         except FileNotFoundError:
             self.params = dict()
-
+        if 'recent_files' not in self.params:
+            self.params['recent_files'] = dict()
         if 'geometry' in self.params:
             self.setGeometry(*self.params['geometry'])
         if 'maximazed' in self.params and self.params['maximazed']:
