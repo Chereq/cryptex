@@ -9,7 +9,8 @@ import json
 import ctypes
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QFileDialog, QAction
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog,
+                             QFileDialog, QAction)
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QSignalMapper
 
@@ -18,6 +19,7 @@ import coders
 
 CONFIG_FILE = 'config.json'
 UI_DIR = 'ui'
+
 
 class MainWindow(QMainWindow):
     """main window defines here"""
@@ -115,7 +117,7 @@ class MainWindow(QMainWindow):
 
         self.recent_mapper.mapped['QString'].connect(self.open_recent)
         self.menuOpen_recent.addSeparator()
-        self.menuOpen_recent.addAction(clear_recentAction)        
+        self.menuOpen_recent.addAction(clear_recentAction)
 
     def new_file(self):
         """Reset previously opened/saved filename and cleans text_field"""
@@ -146,9 +148,11 @@ class MainWindow(QMainWindow):
             try:
                 text = open(self.save_filename, 'r').read()
                 self.text_field.setPlainText(text)
-                self.setWindowTitle(self.window_title + ': ' + self.save_filename)
+                self.setWindowTitle(self.window_title + ': ' +
+                                    self.save_filename)
 
-                self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
+                basename = os.path.basename(self.save_filename)
+                self.params['recent_files'][basename] = self.save_filename
                 self.update_recent_menu()
             except Exception as ex:
                 self.show_error(ex.__class__.__name__, str(ex))
@@ -173,15 +177,19 @@ class MainWindow(QMainWindow):
                                                     dir_path)[0]
         if file_name:
             self.save_filename = file_name
-        if newfile and not file_name:
+        if (newfile and not file_name) or \
+           (not file_name and not self.save_filename):
             return
         self.params['save_dir'] = os.path.dirname(
             os.path.abspath(self.save_filename))
-        self.params['recent_files'][os.path.basename(self.save_filename)] = self.save_filename
+        basename = os.path.basename(self.save_filename)
+        self.params['recent_files'][basename] = self.save_filename
         self.update_recent_menu()
         text = self.text_field.toPlainText()
         try:
             open(self.save_filename, 'w').write(text)
+            self.setWindowTitle(self.window_title + ': ' +
+                                self.save_filename)
         except Exception as ex:
             self.show_error(ex.__class__.__name__, str(ex))
 
