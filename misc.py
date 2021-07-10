@@ -84,18 +84,22 @@ class TextsDB():
             timestamp = int(time())
 
         sql = f'''INSERT INTO `{self.table_name}`(`text`,`timestamp`)
-                            VALUES ("{text}","{timestamp}");'''
-        self.cur.execute(sql)
+                            VALUES (?, ?);'''
+        self.cur.execute(sql, (text, timestamp))
         self.conn.commit()
         return self.cur.lastrowid
 
     def get_row(self, id_=None):
-        """Returns id-defined text from table or last text if id not specified"""
-        sql = f'''SELECT `text` FROM `{self.table_name}` WHERE `id` = {id_};'''
+        """Returns id-defined text from table
+        or last text if id not specified"""
         if not id_:
             sql = f'''SELECT `text` FROM `{self.table_name}`
                                     ORDER BY `id` DESC LIMIT 1'''
-        res = self.cur.execute(sql).fetchone()
+            res = self.cur.execute(sql).fetchone()
+        else:
+            sql = f'''SELECT `text` FROM `{self.table_name}` WHERE `id` = ?;'''
+            res = self.cur.execute(sql, (id_,)).fetchone()
+
         return res[0]
 
     def get_rows(self):
@@ -104,10 +108,10 @@ class TextsDB():
         res = self.cur.execute(sql).fetchall()
         return res
 
-    def delete_row(self, id):
+    def delete_row(self, id_):
         """Deletes id-specified text from table"""
-        sql = f'''DELETE FROM `{self.table_name}` WHERE `id` = {id};'''
-        self.cur.execute(sql)
+        sql = f'''DELETE FROM `{self.table_name}` WHERE `id` = ?;'''
+        self.cur.execute(sql, (id_,))
         self.conn.commit()
 
     def clear_db(self):
@@ -115,16 +119,3 @@ class TextsDB():
         sql = f'DELETE FROM `{self.table_name}`'
         self.cur.execute(sql)
         self.conn.commit()
-
-
-if __name__ == '__main__':
-    tdb = TextsDB()
-    tdb.init_db()
-    id_ = tdb.add_row("lorem ipsum dolor sit amet")
-    id_ = tdb.add_row("lorem ipsum dolor sit amet")
-    id_ = tdb.add_row("lorem ipsum dolor sit amet22")
-    tdb.delete_row(id_ - 1)
-    print(id_, tdb.get_row(id_))
-    print(tdb.get_rows())
-    print(tdb.get_row())
-    # tdb.clear_db()

@@ -71,6 +71,9 @@ class MainWindow(QMainWindow):
         self.actionClear.setShortcuts(QKeySequence('Ctrl+Backspace'))
         self.actionClear.triggered.connect(self.text_field.clear)
 
+        self.actionDBSave.triggered.connect(self.db_save_text)
+        self.actionDBLoadLast.triggered.connect(self.db_load_text)
+
         self.window_title = self.windowTitle()
 
         self.update_recent_menu()
@@ -92,36 +95,48 @@ class MainWindow(QMainWindow):
             self.radio_hash.setChecked(True)
 
     def db_update_menu(self):
+        """Update load-text menu with texts list from db"""
         self.menuLoad_text.clear()
         clear_DBAction = QAction("Clear items", self)
         clear_DBAction.triggered.connect(self.db_clear)
         clear_DBAction.setEnabled(False)
+        self.actionDBLoadLast.setEnabled(False)
 
         self.db_mapper = QSignalMapper(self)
 
         for text in self.tdb.get_rows():
             action_name = text[1]
+            action_id = str(text[0])
             if len(action_name) >= 15:
                 action_name = action_name[:15] + '...'
             DBAction = QAction(action_name, self)
             self.menuLoad_text.addAction(DBAction)
-            self.db_mapper.setMapping(DBAction, text[0])
+            self.db_mapper.setMapping(DBAction, action_id)
             DBAction.triggered.connect(self.db_mapper.map)
             clear_DBAction.setEnabled(True)
+            self.actionDBLoadLast.setEnabled(True)
 
         self.db_mapper.mapped['QString'].connect(self.db_load_text)
         self.menuLoad_text.addSeparator()
         self.menuLoad_text.addAction(clear_DBAction)
 
     def db_clear(self, event):
-        print("clear db!")
+        """Clear db and update load-text menu"""
+        self.tdb.clear_db()
         self.db_update_menu()
 
     def db_load_text(self, event):
-        print("load text from db!")
+        """Load last or id-defined text from db"""
+        if event:
+            text = self.tdb.get_row(int(event))
+        else:
+            text = self.tdb.get_row()
+        self.text_field.setPlainText(text)
 
     def db_save_text(self, event):
-        print("save text to db!")
+        """Save text into db as new record"""
+        text = self.text_field.toPlainText()
+        self.tdb.add_row(text)
         self.db_update_menu()
 
     def clear_recent(self, event):
