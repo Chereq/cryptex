@@ -197,7 +197,7 @@
      <x>0</x>
      <y>0</y>
      <width>602</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -237,9 +237,23 @@
     <addaction name="separator"/>
     <addaction name="actionClear"/>
    </widget>
+   <widget class="QMenu" name="menuDatebase">
+    <property name="title">
+     <string>Datebase</string>
+    </property>
+    <widget class="QMenu" name="menuLoad_text">
+     <property name="title">
+      <string>Load text...</string>
+     </property>
+    </widget>
+    <addaction name="actionSave_2"/>
+    <addaction name="actionLoad_last_text"/>
+    <addaction name="menuLoad_text"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuDatebase"/>
   </widget>
   <action name="menu_help">
    <property name="text">
@@ -332,6 +346,21 @@
    </property>
    <property name="text">
     <string>Clear items</string>
+   </property>
+  </action>
+  <action name="actionSave_2">
+   <property name="text">
+    <string>Save text</string>
+   </property>
+  </action>
+  <action name="actionLoad_last_text">
+   <property name="text">
+    <string>Load last text</string>
+   </property>
+  </action>
+  <action name="actionte">
+   <property name="text">
+    <string>te</string>
    </property>
   </action>
  </widget>

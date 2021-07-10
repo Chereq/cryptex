@@ -14,11 +14,9 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog,
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QSignalMapper
 
+from misc import (AboutWindow, HelpWindow, TextsDB,
+                  CONFIG_FILE, UI_DIR)
 import coders
-
-
-CONFIG_FILE = 'config.json'
-UI_DIR = 'ui'
 
 
 class MainWindow(QMainWindow):
@@ -29,6 +27,8 @@ class MainWindow(QMainWindow):
         uic.loadUi(UI_DIR + '/main.ui', self)
         self.hide_error()
         self.load_params()
+
+        self.tdb = TextsDB()
 
         self.convert_button.clicked.connect(self.convert)
         self.radio_encode.toggled.connect(self.switch_mode_callback)
@@ -74,6 +74,7 @@ class MainWindow(QMainWindow):
         self.window_title = self.windowTitle()
 
         self.update_recent_menu()
+        self.db_update_menu()
 
         if os.name == 'nt':
             # some Шindows black magic here
@@ -89,6 +90,39 @@ class MainWindow(QMainWindow):
             self.radio_decode.setChecked(True)
         else:
             self.radio_hash.setChecked(True)
+
+    def db_update_menu(self):
+        self.menuLoad_text.clear()
+        clear_DBAction = QAction("Clear items", self)
+        clear_DBAction.triggered.connect(self.db_clear)
+        clear_DBAction.setEnabled(False)
+
+        self.db_mapper = QSignalMapper(self)
+
+        for text in self.tdb.get_rows():
+            action_name = text[1]
+            if len(action_name) >= 15:
+                action_name = action_name[:15] + '...'
+            DBAction = QAction(action_name, self)
+            self.menuLoad_text.addAction(DBAction)
+            self.db_mapper.setMapping(DBAction, text[0])
+            DBAction.triggered.connect(self.db_mapper.map)
+            clear_DBAction.setEnabled(True)
+
+        self.db_mapper.mapped['QString'].connect(self.db_load_text)
+        self.menuLoad_text.addSeparator()
+        self.menuLoad_text.addAction(clear_DBAction)
+
+    def db_clear(self, event):
+        print("clear db!")
+        self.db_update_menu()
+
+    def db_load_text(self, event):
+        print("load text from db!")
+
+    def db_save_text(self, event):
+        print("save text to db!")
+        self.db_update_menu()
 
     def clear_recent(self, event):
         """Reset recent files dictionary"""
@@ -414,42 +448,6 @@ class MainWindow(QMainWindow):
         self.error_label.setToolTip(error_text)
         self.error_label.setStyleSheet("color: red")
         self.error_label.show()
-
-
-class AboutWindow(QDialog):
-    """About dialog with some text, image and close button"""
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        uic.loadUi(UI_DIR + '/about.ui', self)
-        self.setFixedSize(self.size())
-        self.setWindowFlags(
-            self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        self.close_button.clicked.connect(self.close)
-        self.about_field.setText('Yet another PyQT5 demo application '
-                                 'made on Earth\nby humans?')
-        self.author_label.setText('89dd33736a5f5ff75891479a4e633897')
-
-
-class HelpWindow(QDialog):
-    """Help dialog with rendered README.md on text-browser field"""
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
-        uic.loadUi(UI_DIR + '/help.ui', self)
-        self.setWindowFlags(
-            self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        self.close_button.clicked.connect(self.close)
-
-        readme = '(Help!) I need somebody!  \n' \
-                 '(Help!) Not just anybody  \n' \
-                 '(Help!) You know I need someone  \n' \
-                 '\tHeelp~  \n\n'
-
-        readme += open('README.md', 'r').read()
-        self.help_field.setText(readme)
-        try:
-            self.help_field.setMarkdown(readme)
-        except:
-            pass
 
 
 def main():
