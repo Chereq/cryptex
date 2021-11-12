@@ -4,199 +4,204 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="main.py" line="175"/>
+        <location filename="main.py" line="178"/>
         <source>CryptEX</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="176"/>
+        <location filename="main.py" line="179"/>
         <source>Coding params</source>
         <translation>Параметры шифрования</translation>
     </message>
     <message>
-        <location filename="main.py" line="177"/>
+        <location filename="main.py" line="180"/>
         <source>Encode</source>
         <translation>Шифрование</translation>
     </message>
     <message>
-        <location filename="main.py" line="178"/>
+        <location filename="main.py" line="181"/>
         <source>Decode</source>
         <translation>Дешифрование</translation>
     </message>
     <message>
-        <location filename="main.py" line="179"/>
+        <location filename="main.py" line="182"/>
         <source>Hash</source>
         <translation>Хеширование</translation>
     </message>
     <message>
-        <location filename="main.py" line="180"/>
+        <location filename="main.py" line="183"/>
         <source>Coding method:</source>
         <translation>Метод шифрования:</translation>
     </message>
     <message>
-        <location filename="main.py" line="181"/>
+        <location filename="main.py" line="184"/>
         <source>Key:</source>
         <translation>Ключ:</translation>
     </message>
     <message>
-        <location filename="main.py" line="182"/>
+        <location filename="main.py" line="185"/>
         <source>Some error text here!</source>
         <translation>Тут некая ошибка!</translation>
     </message>
     <message>
-        <location filename="main.py" line="183"/>
+        <location filename="main.py" line="186"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Some error message here!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Какая-то ошибка тут!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="main.py" line="184"/>
+        <location filename="main.py" line="187"/>
         <source>Convert</source>
         <translation>Преобразование</translation>
     </message>
     <message>
-        <location filename="main.py" line="190"/>
+        <location filename="main.py" line="194"/>
         <source>Help</source>
         <translation>Помощь</translation>
     </message>
     <message>
-        <location filename="main.py" line="186"/>
+        <location filename="main.py" line="189"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="main.py" line="187"/>
+        <location filename="main.py" line="190"/>
         <source>Open recent</source>
         <translation>Открыть последнее</translation>
     </message>
     <message>
-        <location filename="main.py" line="188"/>
+        <location filename="main.py" line="191"/>
         <source>Load text...</source>
         <translation>Загрузить текст...</translation>
     </message>
     <message>
-        <location filename="main.py" line="189"/>
+        <location filename="main.py" line="192"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="main.py" line="191"/>
+        <location filename="main.py" line="195"/>
         <source>Ctrl+H</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="192"/>
+        <location filename="main.py" line="196"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="main.py" line="193"/>
+        <location filename="main.py" line="197"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="main.py" line="194"/>
+        <location filename="main.py" line="198"/>
         <source>Ctrl+C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="195"/>
+        <location filename="main.py" line="199"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="main.py" line="196"/>
+        <location filename="main.py" line="200"/>
         <source>Ctrl+V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="197"/>
+        <location filename="main.py" line="201"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="main.py" line="198"/>
+        <location filename="main.py" line="202"/>
         <source>Ctrl+X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="199"/>
+        <location filename="main.py" line="203"/>
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="main.py" line="200"/>
+        <location filename="main.py" line="204"/>
         <source>Ctrl+Backspace</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="201"/>
+        <location filename="main.py" line="205"/>
         <source>Open</source>
         <translation>Открыть</translation>
     </message>
     <message>
-        <location filename="main.py" line="202"/>
+        <location filename="main.py" line="206"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="203"/>
+        <location filename="main.py" line="207"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="main.py" line="210"/>
+        <location filename="main.py" line="214"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="205"/>
+        <location filename="main.py" line="209"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="main.py" line="206"/>
+        <location filename="main.py" line="210"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="207"/>
+        <location filename="main.py" line="211"/>
         <source>Save As...</source>
         <translation>Сохранить как...</translation>
     </message>
     <message>
-        <location filename="main.py" line="208"/>
+        <location filename="main.py" line="212"/>
         <source>Ctrl+Shift+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="209"/>
+        <location filename="main.py" line="213"/>
         <source>New...</source>
         <translation>Новый...</translation>
     </message>
     <message>
-        <location filename="main.py" line="211"/>
+        <location filename="main.py" line="215"/>
         <source>Clear items</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="main.py" line="212"/>
+        <location filename="main.py" line="216"/>
         <source>Save text</source>
         <translation>Сохранить текст</translation>
     </message>
     <message>
-        <location filename="main.py" line="213"/>
+        <location filename="main.py" line="217"/>
         <source>Load last text</source>
         <translation>Загрузить последний текст</translation>
     </message>
     <message>
-        <location filename="main.py" line="216"/>
+        <location filename="main.py" line="220"/>
         <source>te</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="main.py" line="215"/>
+        <location filename="main.py" line="219"/>
         <source>Datebase actions:</source>
         <translation>Действия БД:</translation>
+    </message>
+    <message>
+        <location filename="main.py" line="193"/>
+        <source>Language</source>
+        <translation>Язык</translation>
     </message>
 </context>
 <context>

@@ -12,7 +12,7 @@ import ctypes
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog,
                              QFileDialog, QAction)
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt, QSignalMapper, QTranslator, pyqtSlot, QEvent
+from PyQt5.QtCore import Qt, QSignalMapper, QTranslator
 
 from misc import (AboutWindow, HelpWindow, TextsDB,
                   CONFIG_FILE, UI_DIR)
@@ -29,11 +29,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.trans = QTranslator(self)
-        self.change_lang(UI_DIR + '/eng-ru')
+        # self.change_lang(UI_DIR + '/eng-ru')
         # self.change_lang()
 
         self.hide_error()
         self.load_params()
+
+        self.load_langs()
 
         self.tdb = TextsDB()
 
@@ -101,17 +103,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.radio_hash.setChecked(True)
 
+    def load_langs(self):
+        self.fil_langs_menu([('', 'English'), ('eng-ru', 'Русский'), ('eng-chs', '汉语')])
+
+    def fil_langs_menu(self, langs):
+        for lang in langs:
+            lang_action = QAction(lang[1], self)
+            lang = 'ui/' + lang[0] if lang[0] else None
+            lang_action.triggered.connect(lambda _,lang=lang: self.change_lang(lang))
+            self.menuLanguage.addAction(lang_action)
+
     def change_lang(self, lang=None):
         if lang:
             self.trans.load(lang)
             QApplication.instance().installTranslator(self.trans)
         else:
             QApplication.instance().removeTranslator(self.trans)
-
-    def changeEvent(self, event):
-        if event.type() == QEvent.LanguageChange:
-            self.retranslateUi(self)
-        super().changeEvent(event)
+        self.retranslateUi(self)
 
     def db_update_menu(self):
         """Update load-text menu with texts list from db"""
