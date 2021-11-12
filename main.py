@@ -12,19 +12,26 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog,
                              QFileDialog, QAction)
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import Qt, QSignalMapper
+from PyQt5.QtCore import Qt, QSignalMapper, QTranslator, pyqtSlot, QEvent
 
 from misc import (AboutWindow, HelpWindow, TextsDB,
                   CONFIG_FILE, UI_DIR)
+from ui.main import Ui_MainWindow
 import coders
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     """main window defines here"""
     def __init__(self):
         """init ui and connect some callbacks"""
         super().__init__()
-        uic.loadUi(UI_DIR + '/main.ui', self)
+        # uic.loadUi(UI_DIR + '/main.ui', self)
+        self.setupUi(self)
+
+        self.trans = QTranslator(self)
+        self.change_lang(UI_DIR + '/eng-ru')
+        # self.change_lang()
+
         self.hide_error()
         self.load_params()
 
@@ -93,6 +100,18 @@ class MainWindow(QMainWindow):
             self.radio_decode.setChecked(True)
         else:
             self.radio_hash.setChecked(True)
+
+    def change_lang(self, lang=None):
+        if lang:
+            self.trans.load(lang)
+            QApplication.instance().installTranslator(self.trans)
+        else:
+            QApplication.instance().removeTranslator(self.trans)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        super().changeEvent(event)
 
     def db_update_menu(self):
         """Update load-text menu with texts list from db"""
