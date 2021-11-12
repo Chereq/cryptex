@@ -18,7 +18,7 @@ class Ui_help_dialog(object):
         help_dialog.resize(400, 300)
         help_dialog.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("images/passkey.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("ui/images/passkey.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         help_dialog.setWindowIcon(icon)
         help_dialog.setModal(False)
         self.verticalLayout = QtWidgets.QVBoxLayout(help_dialog)

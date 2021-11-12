@@ -8,7 +8,7 @@ from inspect import signature
 import json
 import ctypes
 
-from PyQt5 import uic
+# from PyQt5 import uic
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QDialog,
                              QFileDialog, QAction)
 from PyQt5.QtGui import QKeySequence

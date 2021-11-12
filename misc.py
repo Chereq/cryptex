@@ -4,21 +4,24 @@
 import sqlite3
 from time import time
 
-from PyQt5 import uic
+# from PyQt5 import uic
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt
 
+from ui.help import Ui_help_dialog
+from ui.about import Ui_about_dialog
 
 CONFIG_FILE = 'config.json'
 UI_DIR = 'ui'
 DB_FILENAME = 'saved_texts.sqlite'
 
 
-class AboutWindow(QDialog):
+class AboutWindow(QDialog, Ui_about_dialog):
     """About dialog with some text, image and close button"""
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        uic.loadUi(UI_DIR + '/about.ui', self)
+        # uic.loadUi(UI_DIR + '/about.ui', self)
+        self.setupUi(self)
         self.setFixedSize(self.size())
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
@@ -28,11 +31,12 @@ class AboutWindow(QDialog):
         self.author_label.setText('89dd33736a5f5ff75891479a4e633897')
 
 
-class HelpWindow(QDialog):
+class HelpWindow(QDialog, Ui_help_dialog):
     """Help dialog with rendered README.md on text-browser field"""
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        uic.loadUi(UI_DIR + '/help.ui', self)
+        # uic.loadUi(UI_DIR + '/help.ui', self)
+        self.setupUi(self)
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.close_button.clicked.connect(self.close)
